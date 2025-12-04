@@ -1,6 +1,7 @@
 package io.github.projectunified.mcserverupdater.updater;
 
 import io.github.projectunified.mcserverupdater.UpdateBuilder;
+import io.github.projectunified.mcserverupdater.api.Checksum;
 import io.github.projectunified.mcserverupdater.api.DebugConsumer;
 import io.github.projectunified.mcserverupdater.api.Updater;
 import io.github.projectunified.mcserverupdater.util.VersionQuery;
@@ -61,6 +62,11 @@ public class SpigotUpdater implements Updater {
             }
         }
         return true;
+    }
+
+    @Override
+    public Checksum getChecksumChecker() {
+        return null;
     }
 
     @Override

@@ -5,6 +5,8 @@ import java.io.File;
 public interface Updater {
     boolean update(File file) throws Exception;
 
+    Checksum getChecksumChecker();
+
     DebugConsumer getDebugConsumer();
 
     default void debug(String message) {

@@ -1,9 +1,10 @@
 package io.github.projectunified.mcserverupdater.updater;
 
 import io.github.projectunified.mcserverupdater.UpdateBuilder;
+import io.github.projectunified.mcserverupdater.api.Checksum;
 import io.github.projectunified.mcserverupdater.api.DebugConsumer;
 import io.github.projectunified.mcserverupdater.api.InputStreamUpdater;
-import io.github.projectunified.mcserverupdater.api.SimpleChecksum;
+import io.github.projectunified.mcserverupdater.api.checksum.SimpleChecksum;
 import io.github.projectunified.mcserverupdater.util.VersionQuery;
 import io.github.projectunified.mcserverupdater.util.WebUtils;
 import org.json.JSONArray;
@@ -107,6 +108,11 @@ public class FabricUpdater implements InputStreamUpdater, SimpleChecksum {
     @Override
     public String getCurrentChecksum(File file) throws Exception {
         return updateBuilder.checksumSupplier().get();
+    }
+
+    @Override
+    public Checksum getChecksumChecker() {
+        return this;
     }
 
     @Override

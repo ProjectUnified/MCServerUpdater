@@ -1,6 +1,7 @@
 package io.github.projectunified.mcserverupdater.api;
 
 import io.github.projectunified.mcserverupdater.UpdateBuilder;
+import io.github.projectunified.mcserverupdater.api.checksum.SimpleChecksum;
 import io.github.projectunified.mcserverupdater.util.VersionQuery;
 import io.github.projectunified.mcserverupdater.util.WebUtils;
 import org.json.JSONArray;
@@ -87,6 +88,16 @@ public abstract class GithubBranchUpdater implements SimpleChecksum, InputStream
     }
 
     @Override
+    public String getCurrentChecksum(File file) throws Exception {
+        return updateBuilder.checksumSupplier().get();
+    }
+
+    @Override
+    public Checksum getChecksumChecker() {
+        return this;
+    }
+
+    @Override
     public InputStream getInputStream() {
         String build = getBuild();
         if (build == null) {
@@ -98,11 +109,6 @@ public abstract class GithubBranchUpdater implements SimpleChecksum, InputStream
         }
         String url = String.format(downloadUrl, build, file);
         return WebUtils.getInputStreamOrNull(url, updateBuilder);
-    }
-
-    @Override
-    public String getCurrentChecksum(File file) throws Exception {
-        return updateBuilder.checksumSupplier().get();
     }
 
     @Override

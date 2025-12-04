@@ -1,4 +1,7 @@
-package io.github.projectunified.mcserverupdater.api;
+package io.github.projectunified.mcserverupdater.api.checksum;
+
+import io.github.projectunified.mcserverupdater.api.Checksum;
+import io.github.projectunified.mcserverupdater.api.DebugConsumer;
 
 import java.io.File;
 
@@ -7,19 +10,17 @@ public interface SimpleChecksum extends Checksum {
 
     String getCurrentChecksum(File file) throws Exception;
 
+    DebugConsumer getDebugConsumer();
+
     @Override
     default boolean checksum(File file) throws Exception {
         String checksum = getChecksum();
-        if (this instanceof Updater) {
-            ((Updater) this).debug("Checksum: " + checksum);
-        }
+        getDebugConsumer().consume("Checksum: " + checksum);
         if (checksum == null) {
             return false;
         }
         String currentChecksum = getCurrentChecksum(file);
-        if (this instanceof Updater) {
-            ((Updater) this).debug("Current checksum: " + currentChecksum);
-        }
+        getDebugConsumer().consume("Current checksum: " + currentChecksum);
         return currentChecksum.equals(checksum);
     }
 }

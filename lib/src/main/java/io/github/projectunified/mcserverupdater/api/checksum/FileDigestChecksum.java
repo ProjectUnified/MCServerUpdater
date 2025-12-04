@@ -1,4 +1,4 @@
-package io.github.projectunified.mcserverupdater.api;
+package io.github.projectunified.mcserverupdater.api.checksum;
 
 import io.github.projectunified.mcserverupdater.util.Utils;
 

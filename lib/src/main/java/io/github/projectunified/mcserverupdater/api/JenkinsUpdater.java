@@ -1,6 +1,7 @@
 package io.github.projectunified.mcserverupdater.api;
 
 import io.github.projectunified.mcserverupdater.UpdateBuilder;
+import io.github.projectunified.mcserverupdater.api.checksum.SimpleChecksum;
 import io.github.projectunified.mcserverupdater.util.VersionQuery;
 import io.github.projectunified.mcserverupdater.util.WebUtils;
 import org.json.JSONArray;
@@ -95,6 +96,11 @@ public abstract class JenkinsUpdater implements SimpleChecksum, InputStreamUpdat
     @Override
     public void setChecksum(File file) throws Exception {
         updateBuilder.checksumConsumer().accept(getChecksum());
+    }
+
+    @Override
+    public Checksum getChecksumChecker() {
+        return this;
     }
 
     @Override

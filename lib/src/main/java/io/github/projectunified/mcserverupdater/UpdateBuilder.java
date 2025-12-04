@@ -321,13 +321,11 @@ public final class UpdateBuilder {
 
             try {
                 if (outputFile.exists()) {
-                    if (update instanceof Checksum) {
-                        Checksum checksum = (Checksum) update;
-                        if (checksum.checksum(outputFile)) {
-                            return UpdateStatus.UP_TO_DATE;
-                        } else if (checkOnly) {
-                            return UpdateStatus.OUT_OF_DATE;
-                        }
+                    Checksum checksum = update.getChecksumChecker();
+                    if (checksum.checksum(outputFile)) {
+                        return UpdateStatus.UP_TO_DATE;
+                    } else if (checkOnly) {
+                        return UpdateStatus.OUT_OF_DATE;
                     }
                 } else if (Utils.isFailedToCreateFile(outputFile)) {
                     return UpdateStatus.FILE_FAILED;

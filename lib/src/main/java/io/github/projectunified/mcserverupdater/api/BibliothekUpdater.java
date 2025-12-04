@@ -1,6 +1,7 @@
 package io.github.projectunified.mcserverupdater.api;
 
 import io.github.projectunified.mcserverupdater.UpdateBuilder;
+import io.github.projectunified.mcserverupdater.api.checksum.FileDigestChecksum;
 import io.github.projectunified.mcserverupdater.util.VersionQuery;
 import io.github.projectunified.mcserverupdater.util.WebUtils;
 import org.json.JSONArray;
@@ -86,6 +87,11 @@ public abstract class BibliothekUpdater implements InputStreamUpdater, FileDiges
             debug("Failed to get checksum", e);
             return null;
         }
+    }
+
+    @Override
+    public Checksum getChecksumChecker() {
+        return this;
     }
 
     @Override

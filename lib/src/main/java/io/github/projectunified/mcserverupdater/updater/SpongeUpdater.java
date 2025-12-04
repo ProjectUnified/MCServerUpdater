@@ -1,9 +1,10 @@
 package io.github.projectunified.mcserverupdater.updater;
 
 import io.github.projectunified.mcserverupdater.UpdateBuilder;
+import io.github.projectunified.mcserverupdater.api.Checksum;
 import io.github.projectunified.mcserverupdater.api.DebugConsumer;
-import io.github.projectunified.mcserverupdater.api.FileDigestChecksum;
 import io.github.projectunified.mcserverupdater.api.InputStreamUpdater;
+import io.github.projectunified.mcserverupdater.api.checksum.FileDigestChecksum;
 import io.github.projectunified.mcserverupdater.util.VersionQuery;
 import io.github.projectunified.mcserverupdater.util.WebUtils;
 import org.json.JSONArray;
@@ -126,6 +127,11 @@ public class SpongeUpdater implements InputStreamUpdater, FileDigestChecksum {
             debug("Failed to get checksum for Sponge download", e);
             return null;
         }
+    }
+
+    @Override
+    public Checksum getChecksumChecker() {
+        return this;
     }
 
     @Override
