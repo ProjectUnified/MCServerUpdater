@@ -1,6 +1,8 @@
 package io.github.projectunified.mcserverupdater.api;
 
 import io.github.projectunified.mcserverupdater.UpdateBuilder;
+import io.github.projectunified.mcserverupdater.api.checksum.FileDigestChecksum;
+import io.github.projectunified.mcserverupdater.api.checksum.SimpleChecksum;
 import io.github.projectunified.mcserverupdater.util.VersionQuery;
 import io.github.projectunified.mcserverupdater.util.WebUtils;
 import org.json.JSONArray;
@@ -11,17 +13,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.security.MessageDigest;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public abstract class GithubReleaseUpdater implements SimpleChecksum, InputStreamUpdater {
+public abstract class GithubReleaseUpdater implements InputStreamUpdater {
     protected final UpdateBuilder updateBuilder;
     protected final String version;
     protected final String build;
     protected final String releasesUrl;
     protected final String repo;
     private final String releaseAssetUrl;
+    private final JSONObject fileObject;
 
     protected GithubReleaseUpdater(VersionQuery versionQuery, String repo) {
         this.repo = repo;
@@ -31,6 +35,7 @@ public abstract class GithubReleaseUpdater implements SimpleChecksum, InputStrea
         this.updateBuilder = versionQuery.updateBuilder;
         this.version = versionQuery.isDefault ? getDefaultVersion() : versionQuery.version;
         this.build = getBuild();
+        this.fileObject = getFileObject();
     }
 
     public abstract Pattern getArtifactPattern();
@@ -104,7 +109,7 @@ public abstract class GithubReleaseUpdater implements SimpleChecksum, InputStrea
         return id;
     }
 
-    private String getFileUrl() {
+    private JSONObject getFileObject() {
         String assetUrl = String.format(releaseAssetUrl, build);
         debug("Getting asset URL from " + assetUrl);
         try {
@@ -115,9 +120,8 @@ public abstract class GithubReleaseUpdater implements SimpleChecksum, InputStrea
                 JSONObject object = array.getJSONObject(i);
                 String name = object.getString("name");
                 if (getArtifactPattern().matcher(name).matches()) {
-                    String url = object.getString("browser_download_url");
-                    debug("Found asset URL: " + url);
-                    return url;
+                    debug("Found asset object: " + name);
+                    return object;
                 }
             }
             return null;
@@ -127,24 +131,70 @@ public abstract class GithubReleaseUpdater implements SimpleChecksum, InputStrea
         }
     }
 
+    private String getFileUrl() {
+        return this.fileObject == null ? null : this.fileObject.getString("browser_download_url");
+    }
+
+    private String[] getFileDigest() {
+        if (fileObject == null) {
+            return null;
+        }
+        if (fileObject.isNull("digest")) {
+            return null;
+        }
+        String digest = fileObject.getString("digest");
+        return digest.split(Pattern.quote(":"), 2);
+    }
+
+    @Override
+    public Checksum getChecksumChecker() {
+        String[] fileDigest = getFileDigest();
+        if (fileDigest == null) {
+            return new SimpleChecksum() {
+                @Override
+                public String getChecksum() {
+                    return repo + "||" + build;
+                }
+
+                @Override
+                public String getCurrentChecksum(File file) throws Exception {
+                    return updateBuilder.checksumSupplier().get();
+                }
+
+                @Override
+                public DebugConsumer getDebugConsumer() {
+                    return updateBuilder.debugConsumer();
+                }
+            };
+        } else {
+            return new FileDigestChecksum() {
+                @Override
+                public MessageDigest getMessageDigest() throws Exception {
+                    String digestType = fileDigest[0];
+                    if (digestType.equals("sha256")) {
+                        return MessageDigest.getInstance("SHA-256");
+                    } else if (digestType.equals("md5")) {
+                        return MessageDigest.getInstance("MD5");
+                    }
+                    return null;
+                }
+
+                @Override
+                public String getChecksum() {
+                    return fileDigest[1];
+                }
+
+                @Override
+                public DebugConsumer getDebugConsumer() {
+                    return updateBuilder.debugConsumer();
+                }
+            };
+        }
+    }
+
     @Override
     public InputStream getInputStream() {
         return WebUtils.getInputStreamOrNull(getFileUrl(), updateBuilder);
-    }
-
-    @Override
-    public String getChecksum() {
-        return repo + "||" + build;
-    }
-
-    @Override
-    public void setChecksum(File file) throws Exception {
-        updateBuilder.checksumConsumer().accept(getChecksum());
-    }
-
-    @Override
-    public String getCurrentChecksum(File file) throws Exception {
-        return updateBuilder.checksumSupplier().get();
     }
 
     @Override
