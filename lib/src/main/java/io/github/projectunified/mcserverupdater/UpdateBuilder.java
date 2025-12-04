@@ -319,13 +319,20 @@ public final class UpdateBuilder {
                 return UpdateStatus.NO_PROJECT;
             }
 
+            Checksum checksum = update.getChecksumChecker();
+
+            if (checkOnly && checksum == null) {
+                return UpdateStatus.FAILED;
+            }
+
             try {
                 if (outputFile.exists()) {
-                    Checksum checksum = update.getChecksumChecker();
-                    if (checksum.checksum(outputFile)) {
-                        return UpdateStatus.UP_TO_DATE;
-                    } else if (checkOnly) {
-                        return UpdateStatus.OUT_OF_DATE;
+                    if (checksum != null) {
+                        if (checksum.checksum(outputFile)) {
+                            return UpdateStatus.UP_TO_DATE;
+                        } else if (checkOnly) {
+                            return UpdateStatus.OUT_OF_DATE;
+                        }
                     }
                 } else if (Utils.isFailedToCreateFile(outputFile)) {
                     return UpdateStatus.FILE_FAILED;
@@ -336,8 +343,8 @@ public final class UpdateBuilder {
 
             try {
                 if (update.update(outputFile)) {
-                    if (update instanceof Checksum) {
-                        ((Checksum) update).setChecksum(outputFile);
+                    if (checksum != null) {
+                        checksum.setChecksum(outputFile);
                     }
                     return UpdateStatus.SUCCESS;
                 } else {
