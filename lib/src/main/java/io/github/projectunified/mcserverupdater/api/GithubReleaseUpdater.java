@@ -162,6 +162,11 @@ public abstract class GithubReleaseUpdater implements InputStreamUpdater {
                 }
 
                 @Override
+                public void setChecksum(File file) throws Exception {
+                    updateBuilder.checksumConsumer().accept(getChecksum());
+                }
+
+                @Override
                 public DebugConsumer getDebugConsumer() {
                     return updateBuilder.debugConsumer();
                 }
