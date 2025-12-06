@@ -51,6 +51,7 @@ public final class UpdateBuilder {
         registerUpdater(versionQuery -> new MultiPaperUpdater(versionQuery, "multipaper"), "multipaper");
         registerUpdater(versionQuery -> new MultiPaperUpdater(versionQuery, "multipaper", "master"), "multipaper-master");
         registerUpdater(versionQuery -> new MultiPaperUpdater(versionQuery, "shreddedpaper"), "shreddedpaper");
+        registerUpdater(GeyserUpdater::new, "geyser", "geysermc");
     }
 
     private final String project;
