@@ -1,4 +1,5 @@
 io.github.projectunified.mcserverupdater
 io.github.projectunified.mcserverupdater.api
+io.github.projectunified.mcserverupdater.api.checksum
 io.github.projectunified.mcserverupdater.updater
 io.github.projectunified.mcserverupdater.util
