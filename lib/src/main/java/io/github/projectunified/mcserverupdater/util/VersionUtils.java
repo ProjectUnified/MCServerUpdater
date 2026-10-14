@@ -12,7 +12,8 @@ public class VersionUtils {
             return false;
         }
         int majorVersion = Integer.parseInt(matcher.group(2));
-        int minorVersion = Integer.parseInt(matcher.group(4));
+        String minorGroup = matcher.group(4);
+        int minorVersion = minorGroup != null ? Integer.parseInt(minorGroup) : 0;
 
         return majorVersion > major || (majorVersion == major && minorVersion >= minor);
     }
