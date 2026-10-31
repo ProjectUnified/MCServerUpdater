@@ -27,7 +27,8 @@ public final class UpdateBuilder {
         registerUpdater(versionQuery -> new PaperUpdater(versionQuery, "waterfall"), "waterfall");
         registerUpdater(versionQuery -> new PaperUpdater(versionQuery, "velocity"), "velocity");
         registerUpdater(versionQuery -> new PaperUpdater(versionQuery, "folia"), "folia");
-        registerUpdater(versionQuery -> new PandaSpigotUpdater(versionQuery, "pandaspigot"), "pandaspigot");
+        registerUpdater(PandaSpigotUpdater::new, "pandaspigot");
+        registerUpdater(DashSpigotUpdater::new, "dashspigot");
         registerUpdater(PurpurUpdater::new, "purpur", "purpurmc");
         registerUpdater(BungeeCordUpdater::new, "bungeecord", "bungee");
         registerUpdater(SpigotUpdater::new, "spigot", "spigotmc");

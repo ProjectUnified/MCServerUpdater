@@ -7,8 +7,8 @@ import org.json.JSONObject;
 import java.security.MessageDigest;
 
 public class PandaSpigotUpdater extends BibliothekUpdater {
-    public PandaSpigotUpdater(VersionQuery versionQuery, String project) {
-        super(versionQuery, project);
+    public PandaSpigotUpdater(VersionQuery versionQuery) {
+        super(versionQuery, "pandaspigot");
     }
 
     @Override
